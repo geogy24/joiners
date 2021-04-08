@@ -3,9 +3,9 @@ package com.joiner.main.controllers;
 import com.joiner.main.dtos.JoinerDto;
 import com.joiner.main.dtos.UpdateJoinerDto;
 import com.joiner.main.models.Joiner;
-import com.joiner.main.services.CreateJoinerServiceInterface;
-import com.joiner.main.services.ShowJoinerServiceInterface;
-import com.joiner.main.services.UpdateJoinerServiceInterface;
+import com.joiner.main.services.interfaces.CreateJoinerService;
+import com.joiner.main.services.interfaces.ShowJoinerService;
+import com.joiner.main.services.interfaces.UpdateJoinerService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -26,18 +26,18 @@ import javax.validation.Valid;
 @RequestMapping("/api/joiners")
 @Log4j2
 public class JoinerController {
-    private final CreateJoinerServiceInterface createJoinerServiceInterface;
-    private final ShowJoinerServiceInterface showJoinerServiceInterface;
-    private final UpdateJoinerServiceInterface updateJoinerServiceInterface;
+    private final CreateJoinerService createJoinerService;
+    private final ShowJoinerService showJoinerService;
+    private final UpdateJoinerService updateJoinerService;
 
     @Autowired
     public JoinerController(
-            CreateJoinerServiceInterface createJoinerServiceInterface,
-            ShowJoinerServiceInterface showJoinerServiceInterface,
-            UpdateJoinerServiceInterface updateJoinerServiceInterface) {
-        this.createJoinerServiceInterface = createJoinerServiceInterface;
-        this.showJoinerServiceInterface = showJoinerServiceInterface;
-        this.updateJoinerServiceInterface = updateJoinerServiceInterface;
+            CreateJoinerService createJoinerService,
+            ShowJoinerService showJoinerService,
+            UpdateJoinerService updateJoinerService) {
+        this.createJoinerService = createJoinerService;
+        this.showJoinerService = showJoinerService;
+        this.updateJoinerService = updateJoinerService;
     }
 
     @PostMapping
@@ -48,7 +48,7 @@ public class JoinerController {
     })
     public Joiner create(@Valid @RequestBody JoinerDto joinerDto) {
         log.info("Create a joiner with data {}", joinerDto);
-        return this.createJoinerServiceInterface.execute(joinerDto);
+        return this.createJoinerService.execute(joinerDto);
     }
 
     @GetMapping("/{id}")
@@ -59,7 +59,7 @@ public class JoinerController {
     })
     public Joiner show(@PathVariable Long id) {
         log.info("Search a joiner with ID {}", id);
-        return this.showJoinerServiceInterface.execute(id);
+        return this.showJoinerService.execute(id);
     }
 
     @PutMapping("/{id}")
@@ -70,6 +70,6 @@ public class JoinerController {
     })
     public Joiner update(@PathVariable Long id, @Valid @RequestBody UpdateJoinerDto updateJoinerDto) {
         log.info("Update a joiner with ID {} data {}", id, updateJoinerDto);
-        return this.updateJoinerServiceInterface.execute(id, updateJoinerDto);
+        return this.updateJoinerService.execute(id, updateJoinerDto);
     }
 }

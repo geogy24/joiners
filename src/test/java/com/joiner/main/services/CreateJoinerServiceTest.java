@@ -11,6 +11,7 @@ import com.joiner.main.repositories.JoinerRepository;
 import com.joiner.main.repositories.LanguageLevelRepository;
 import com.joiner.main.repositories.RoleRepository;
 import com.joiner.main.repositories.StackRepository;
+import com.joiner.main.services.implementations.CreateJoinerService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

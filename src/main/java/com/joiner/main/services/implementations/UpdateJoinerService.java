@@ -1,4 +1,4 @@
-package com.joiner.main.services;
+package com.joiner.main.services.implementations;
 
 import com.joiner.main.dtos.UpdateJoinerDto;
 import com.joiner.main.exceptions.JoinerNotFoundException;
@@ -19,7 +19,7 @@ import java.util.Objects;
 
 @Service
 @Log4j2
-public class UpdateJoinerService implements UpdateJoinerServiceInterface {
+public class UpdateJoinerService implements com.joiner.main.services.interfaces.UpdateJoinerService {
     private final JoinerRepository joinerRepository;
     private final RoleRepository roleRepository;
     private final LanguageLevelRepository languageLevelRepository;
