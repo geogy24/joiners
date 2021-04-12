@@ -1,4 +1,4 @@
-package com.joiner.main.services;
+package com.joiner.main.services.implementations;
 
 import com.joiner.main.exceptions.JoinerNotFoundException;
 import com.joiner.main.models.Joiner;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Log4j2
-public class ShowJoinerService implements ShowJoinerServiceInterface {
+public class ShowJoinerService implements com.joiner.main.services.interfaces.ShowJoinerService {
     private final JoinerRepository joinerRepository;
 
     @Autowired

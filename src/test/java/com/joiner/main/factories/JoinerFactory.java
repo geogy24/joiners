@@ -2,6 +2,7 @@ package com.joiner.main.factories;
 
 import com.github.javafaker.Faker;
 import com.joiner.main.dtos.JoinerDto;
+import com.joiner.main.dtos.UpdateJoinerDto;
 import com.joiner.main.models.Joiner;
 
 import java.util.HashMap;
@@ -53,6 +54,18 @@ public class JoinerFactory {
 
     public JoinerDto dto() {
         return JoinerDto.builder()
+                .identificationNumber(faker.idNumber().valid())
+                .name(faker.name().firstName())
+                .lastName(faker.name().lastName())
+                .domainExperience(faker.lorem().sentence())
+                .roleId(Long.parseLong(faker.number().digits(3)))
+                .languageLevelId(Long.parseLong(faker.number().digits(3)))
+                .stackId(Long.parseLong(faker.number().digits(3)))
+                .build();
+    }
+
+    public UpdateJoinerDto updateDto() {
+        return UpdateJoinerDto.builder()
                 .identificationNumber(faker.idNumber().valid())
                 .name(faker.name().firstName())
                 .lastName(faker.name().lastName())

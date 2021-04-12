@@ -1,5 +1,7 @@
 package com.joiner.main.services;
 
+import com.github.javafaker.Faker;
+import com.joiner.main.exceptions.JoinerNotFoundException;
 import com.joiner.main.exceptions.LanguageLevelNotFoundException;
 import com.joiner.main.exceptions.RoleNotFoundException;
 import com.joiner.main.exceptions.StackNotFoundException;
@@ -11,7 +13,7 @@ import com.joiner.main.repositories.JoinerRepository;
 import com.joiner.main.repositories.LanguageLevelRepository;
 import com.joiner.main.repositories.RoleRepository;
 import com.joiner.main.repositories.StackRepository;
-import com.joiner.main.services.implementations.CreateJoinerService;
+import com.joiner.main.services.implementations.UpdateJoinerService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,8 +31,8 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = {CreateJoinerService.class})
-public class CreateJoinerServiceTest {
+@ContextConfiguration(classes = {UpdateJoinerService.class})
+public class UpdateJoinerServiceTest {
 
     @MockBean
     private JoinerRepository joinerRepository;
@@ -45,46 +47,65 @@ public class CreateJoinerServiceTest {
     private StackRepository stackRepository;
 
     @Autowired
-    private CreateJoinerService createJoinerService;
+    private UpdateJoinerService updateJoinerService;
 
     private JoinerFactory joinerFactory;
 
+    private Faker faker;
+
     @Before
     public void setup() {
+        this.faker = new Faker();
         this.joinerFactory = new JoinerFactory();
     }
 
     @Test
-    public void whenExecuteServiceThenReturnJoinerCreated() {
+    public void whenExecuteServiceThenReturnJoinerUpdated() {
+        Long id = (long) this.faker.number().numberBetween(1, 10);
+        given(this.joinerRepository.findById(anyLong())).willReturn(Optional.of(this.joinerFactory.model()));
         given(this.roleRepository.findById(anyLong())).willReturn(Optional.of(new RoleFactory().model()));
         given(this.languageLevelRepository.findById(anyLong())).willReturn(Optional.of(new LanguageLevelFactory().model()));
         given(this.stackRepository.findById(anyLong())).willReturn(Optional.of(new StackFactory().model()));
         given(this.joinerRepository.save(any())).willReturn(this.joinerFactory.model());
 
-        assertThat(this.createJoinerService.execute(this.joinerFactory.dto())).isNotNull();
+        assertThat(this.updateJoinerService.execute(id, this.joinerFactory.updateDto())).isNotNull();
+    }
+
+    @Test
+    public void whenExecuteServiceButRoleNotFoundThenRaiseJoinerNotFoundException() {
+        Long id = (long) this.faker.number().numberBetween(1, 10);
+        given(this.joinerRepository.findById(anyLong())).willReturn(Optional.empty());
+
+        assertThrows(JoinerNotFoundException.class, () -> this.updateJoinerService.execute(id, this.joinerFactory.updateDto()));
     }
 
     @Test
     public void whenExecuteServiceButRoleNotFoundThenRaiseRoleNotFoundException() {
+        Long id = (long) this.faker.number().numberBetween(1, 10);
+        given(this.joinerRepository.findById(anyLong())).willReturn(Optional.of(this.joinerFactory.model()));
         given(this.roleRepository.findById(anyLong())).willReturn(Optional.empty());
 
-        assertThrows(RoleNotFoundException.class, () -> this.createJoinerService.execute(this.joinerFactory.dto()));
+        assertThrows(RoleNotFoundException.class, () -> this.updateJoinerService.execute(id, this.joinerFactory.updateDto()));
     }
 
     @Test
     public void whenExecuteServiceButLanguageLevelNotFoundThenRaiseLanguageLevelNotFoundException() {
+        Long id = (long) this.faker.number().numberBetween(1, 10);
+        given(this.joinerRepository.findById(anyLong())).willReturn(Optional.of(this.joinerFactory.model()));
         given(this.roleRepository.findById(anyLong())).willReturn(Optional.of(new RoleFactory().model()));
         given(this.languageLevelRepository.findById(anyLong())).willReturn(Optional.empty());
 
-        assertThrows(LanguageLevelNotFoundException.class, () -> this.createJoinerService.execute(this.joinerFactory.dto()));
+        assertThrows(LanguageLevelNotFoundException.class, () -> this.updateJoinerService.execute(id, this.joinerFactory.updateDto()));
     }
 
     @Test
     public void whenExecuteServiceButStackNotFoundThenRaiseStackNotFoundException() {
+        Long id = (long) this.faker.number().numberBetween(1, 10);
+        given(this.joinerRepository.findById(anyLong())).willReturn(Optional.of(this.joinerFactory.model()));
         given(this.roleRepository.findById(anyLong())).willReturn(Optional.of(new RoleFactory().model()));
         given(this.languageLevelRepository.findById(anyLong())).willReturn(Optional.of(new LanguageLevelFactory().model()));
         given(this.stackRepository.findById(anyLong())).willReturn(Optional.empty());
 
-        assertThrows(StackNotFoundException.class, () -> this.createJoinerService.execute(this.joinerFactory.dto()));
+        assertThrows(StackNotFoundException.class, () -> this.updateJoinerService.execute(id, this.joinerFactory.updateDto()));
     }
 }

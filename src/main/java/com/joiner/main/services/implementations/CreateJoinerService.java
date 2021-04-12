@@ -1,4 +1,4 @@
-package com.joiner.main.services;
+package com.joiner.main.services.implementations;
 
 import com.joiner.main.dtos.JoinerDto;
 import com.joiner.main.exceptions.LanguageLevelNotFoundException;
@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Log4j2
-public class CreateJoinerService implements CreateJoinerServiceInterface {
+public class CreateJoinerService implements com.joiner.main.services.interfaces.CreateJoinerService {
     private final JoinerRepository joinerRepository;
     private final RoleRepository roleRepository;
     private final LanguageLevelRepository languageLevelRepository;

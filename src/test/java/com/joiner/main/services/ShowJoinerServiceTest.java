@@ -4,6 +4,7 @@ import com.github.javafaker.Faker;
 import com.joiner.main.exceptions.JoinerNotFoundException;
 import com.joiner.main.factories.JoinerFactory;
 import com.joiner.main.repositories.JoinerRepository;
+import com.joiner.main.services.implementations.ShowJoinerService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
