@@ -1,12 +1,15 @@
 package com.joiner.main.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.javafaker.Faker;
+import com.joiner.main.exceptions.JoinerNotFoundException;
 import com.joiner.main.exceptions.LanguageLevelNotFoundException;
 import com.joiner.main.exceptions.RoleNotFoundException;
 import com.joiner.main.exceptions.StackNotFoundException;
 import com.joiner.main.factories.JoinerFactory;
 import com.joiner.main.models.Joiner;
 import com.joiner.main.services.CreateJoinerServiceInterface;
+import com.joiner.main.services.ShowJoinerServiceInterface;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,9 +30,11 @@ import org.springframework.web.util.NestedServletException;
 import java.util.HashMap;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -39,6 +44,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class JoinerControllerTest {
 
     private final static String JOINER_URL = "/api/joiners";
+    private final static String SEARCH_JOINER_URL = "/api/joiners/{id}";
     private final static String UTF_8_KEY = "utf-8";
     private final static String STACK_ID_KEY = "stack_id";
 
@@ -51,15 +57,21 @@ public class JoinerControllerTest {
     @MockBean
     private CreateJoinerServiceInterface createJoinerServiceInterface;
 
+    @MockBean
+    private ShowJoinerServiceInterface showJoinerServiceInterface;
+
     private Joiner joinerModel;
 
     private HashMap<String, Object> joinerMap;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
+    private Faker faker;
+
     @Before
     public void setup() {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
+        this.faker = new Faker();
 
         JoinerFactory joinerFactory = new JoinerFactory();
         this.joinerMap = joinerFactory.map();
@@ -150,6 +162,48 @@ public class JoinerControllerTest {
                         .characterEncoding(UTF_8_KEY)
                         .content(this.objectMapper.writeValueAsString(map)))
                 .andExpect(status().isInternalServerError())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    }
+
+    @Test
+    public void whenSearchAJoinerThenReturnsJoinerFound() throws Exception {
+        Long id = Long.valueOf(this.faker.number().numberBetween(1, 10));
+        given(this.showJoinerServiceInterface.execute(anyLong())).willReturn(this.joinerModel);
+
+        this.mockMvc
+                .perform(get(SEARCH_JOINER_URL, id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding(UTF_8_KEY)
+                        .content(this.objectMapper.writeValueAsString(this.joinerMap)))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    }
+
+    @Test(expected = MockitoException.class)
+    public void whenSearchAJoinerButNotFoundThenReturnsJoinerNotFoundException() throws Exception {
+        Long id = Long.valueOf(this.faker.number().numberBetween(1, 10));
+        when(this.showJoinerServiceInterface.execute(anyLong())).thenThrow(JoinerNotFoundException.class);
+
+        this.mockMvc
+                .perform(get(SEARCH_JOINER_URL, id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding(UTF_8_KEY)
+                        .content(this.objectMapper.writeValueAsString(this.joinerMap)))
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    }
+
+    @Test(expected = java.lang.AssertionError.class)
+    public void whenSearchAJoinerButSendNotValidDataThenReturnsBadRequestException() throws Exception {
+        String id = this.faker.lorem().word();
+        when(this.showJoinerServiceInterface.execute(anyLong())).thenThrow(HttpClientErrorException.BadRequest.class);
+
+        this.mockMvc
+                .perform(get(SEARCH_JOINER_URL, id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding(UTF_8_KEY)
+                        .content(this.objectMapper.writeValueAsString(this.joinerMap)))
+                .andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 }
