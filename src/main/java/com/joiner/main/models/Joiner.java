@@ -15,7 +15,7 @@ import javax.validation.constraints.Size;
  * @version 1.0.0
  */
 @Entity
-@Table(name = "joiners")
+@Table(name = "joiners", schema = "joiners")
 @Data
 @Builder
 @NoArgsConstructor
@@ -25,7 +25,7 @@ import javax.validation.constraints.Size;
         property = "id")
 public class Joiner {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Setter(AccessLevel.NONE)
     private long id;
 
