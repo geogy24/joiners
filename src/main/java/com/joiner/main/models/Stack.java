@@ -14,7 +14,7 @@ import javax.validation.constraints.NotBlank;
  * @version 1.0.0
  */
 @Entity
-@Table(name = "stacks")
+@Table(name = "stacks", schema = "joiners")
 @Data
 @Builder
 @NoArgsConstructor
@@ -24,7 +24,7 @@ import javax.validation.constraints.NotBlank;
         property = "id")
 public class Stack {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Setter(AccessLevel.NONE)
     private long id;
 
